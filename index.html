@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNIPLUG Image Upload</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    background:#f4f6f9;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+}
+
+.container{
+    background:#fff;
+    width:400px;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.1);
+    text-align:center;
+}
+
+.logo{
+    font-size:28px;
+    font-weight:bold;
+    color:#0066ff;
+    margin-bottom:10px;
+}
+
+.subtitle{
+    color:#666;
+    margin-bottom:25px;
+}
+
+input[type="file"]{
+    width:100%;
+    padding:10px;
+    border:2px dashed #ccc;
+    border-radius:10px;
+    margin-bottom:20px;
+}
+
+button{
+    background:#0066ff;
+    color:white;
+    border:none;
+    padding:12px 25px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+    width:100%;
+}
+
+button:hover{
+    background:#0052cc;
+}
+
+#status{
+    margin-top:15px;
+    font-weight:bold;
+}
+
+.preview-box{
+    margin-top:20px;
+}
+
+.preview-box img{
+    width:100%;
+    max-height:300px;
+    object-fit:cover;
+    border-radius:12px;
+    display:none;
+    border:2px solid #ddd;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="logo">UNIPLUG</div>
+    <p class="subtitle">Upload and Preview Images</p>
+
+    <input type="file" id="fileInput" accept="image/*">
+
+    <button onclick="uploadImage()">
+        Upload Image
+    </button>
+
+    <p id="status"></p>
+
+    <div class="preview-box">
+        <img id="preview" alt="Uploaded Image">
+    </div>
+
+</div>
+
+<script>
+
+async function uploadImage(){
+
+    const file =
+        document.getElementById("fileInput").files[0];
+
+    if(!file){
+        alert("Please select an image.");
+        return;
+    }
+
+    document.getElementById("status").innerText =
+        "Uploading...";
+
+    const formData = new FormData();
+
+    formData.append("file", file);
+
+    formData.append(
+        "upload_preset",
+        "Unplug"
+    );
+
+    try{
+
+        const response = await fetch(
+            "https://api.cloudinary.com/v1_1/dpm7avyrl/image/upload",
+            {
+                method:"POST",
+                body:formData
+            }
+        );
+
+        const data = await response.json();
+
+        if(data.secure_url){
+
+            document.getElementById("status").innerText =
+                "✅ Upload Successful";
+
+            const preview =
+                document.getElementById("preview");
+
+            preview.src = data.secure_url;
+            preview.style.display = "block";
+
+        }else{
+
+            document.getElementById("status").innerText =
+                "❌ Upload Failed";
+
+            console.log(data);
+        }
+
+    }catch(error){
+
+        console.error(error);
+
+        document.getElementById("status").innerText =
+            "❌ Error Uploading";
+    }
+}
+
+</script>
+
+</body>
+</html>
