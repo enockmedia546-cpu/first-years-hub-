@@ -680,7 +680,7 @@ window.saveProfile=async()=>{
   await updateDoc(doc(db,'users',CU.uid),d);
   Object.assign(PROF,d);fillUI(PROF);showToast('✅ Profile saved!');
 };
-window.doLogout=async()=>{await signOut(auth);location.href='login.html';};
+window.doLogout=async()=>{await signOut(auth);location.href='index.html';};
 
 // ── LOAD DATA ──
 async function loadAllData(){
